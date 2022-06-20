@@ -63,7 +63,7 @@ def handle_missing_values(df, prop_required_column, prop_required_row):
 cols_to_remove = ['parcelid', 'propertylandusetypeid', 'id','calculatedbathnbr', 
     'finishedsquarefeet12', 'fullbathcnt', 'propertycountylandusecode',
     'rawcensustractandblock','regionidcounty', 'roomcnt', 'structuretaxvaluedollarcnt',
-    'assessmentyear', 'landtaxvaluedollarcnt', 'censustractandblock', 'id']
+    'assessmentyear', 'landtaxvaluedollarcnt', 'censustractandblock', 'id', 'regionidzip', 'regionidcity','taxamount']
 
 def remove_columns(df, cols_to_remove):
     df = df.drop(columns=cols_to_remove)
@@ -113,11 +113,8 @@ def integers(df):
     df['latitude'] = df['latitude'].astype(int)
     df['longitude'] = df['longitude'].astype(int)
     df['lotsizesquarefeet'] = df['lotsizesquarefeet'].astype(int)
-    df['regionidcity'] = df['regionidcity'].astype(int)
-    df['regionidzip'] = df['regionidzip'].astype(int)
     df['yearbuilt'] = df['yearbuilt'].astype(int)
     df['taxvaluedollarcnt'] = df['taxvaluedollarcnt'].astype(int)
-    df['taxamount'] = df['taxamount'].astype(int)
     df['age'] = df['age'].astype(int)
     df['taxvalue_per_sqft'] = df['taxvalue_per_sqft'].astype(int)
     return df
