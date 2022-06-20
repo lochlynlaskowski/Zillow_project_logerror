@@ -26,12 +26,15 @@ def get_zillow_data():
         AND predictions_2017.transactiondate LIKE '2017%%'
         AND properties_2017.latitude IS NOT NULL
         AND properties_2017.longitude IS NOT NULL;'''
+        # save as .csv
+        df.to_csv('zillow.csv')
 
     df = pd.read_sql(sql, get_db_url('zillow'))
     return df
 
 
 def find_missing_values(df):
+    '''Creates dataframe for missing values.'''
     column_name = []
     num_rows_missing = []
     pct_rows_missing = []
@@ -44,6 +47,8 @@ def find_missing_values(df):
     return pd.DataFrame(data, index=None)
 
 def create_features(df):
+    ''' This function creates three new columns age, taxvalue_per_sqft, and month_of_sale and 
+    adds them to the existing dataframe.'''
     df['age'] = 2017 - df.yearbuilt
     df['taxvalue_per_sqft'] = df.taxvaluedollarcnt / df.calculatedfinishedsquarefeet
     df['month_of_sale'] = pd.DatetimeIndex(df['transactiondate']).month
@@ -51,6 +56,8 @@ def create_features(df):
 
 
 def handle_missing_values(df, prop_required_column, prop_required_row):
+    '''This function removes null values from the entire dataframe if that percentage of nulls
+    is above the given threshold.'''
     threshold = int(round(prop_required_column*len(df.index),0))
     df.dropna(axis=1, thresh=threshold, inplace=True)
     threshold = int(round(prop_required_row*len(df.columns),0))
@@ -66,10 +73,13 @@ cols_to_remove = ['parcelid', 'propertylandusetypeid', 'id','calculatedbathnbr',
     'assessmentyear', 'landtaxvaluedollarcnt', 'censustractandblock', 'id', 'regionidzip', 'regionidcity','taxamount']
 
 def remove_columns(df, cols_to_remove):
+    '''This function removes columns(cols_to_remove) from the dataframe due to duplicates or
+    erroneous data.'''
     df = df.drop(columns=cols_to_remove)
     return df
 
 def map_counties(df):
+    '''This function takes in the fips code and maps the county names.'''
     # identified counties for fips codes 
     counties = {6037: 'Los_Angeles',
                 6059: 'Orange',
@@ -80,7 +90,7 @@ def map_counties(df):
 
 def remove_outliers(df, k):
     ''' Take in a dataframe, k value, and specified columns within a dataframe 
-    and then return the dataframe with outliers removed
+    and then return the dataframe with outliers removed.
     '''
     columns=['bathroomcnt',
 	'bedroomcnt',
@@ -108,6 +118,7 @@ def remove_outliers(df, k):
         
     return df
 def integers(df):
+    """This function converts datatypes to integers for the given columns."""
     df['calculatedfinishedsquarefeet'] = df['calculatedfinishedsquarefeet'].astype(int)
     df['bedroomcnt'] = df['bedroomcnt'].astype(int)
     df['latitude'] = df['latitude'].astype(int)
@@ -124,6 +135,7 @@ def integers(df):
 
 
 def prepare_zillow_data(df):
+    '''Puts together all of the previsouly created functions to prepare Zillow data.'''
     df = create_features(df)
     df = handle_missing_values(df,.7,.7)
     df = remove_outliers(df,k=1.5)
