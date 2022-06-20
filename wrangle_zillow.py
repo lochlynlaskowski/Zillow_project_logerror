@@ -26,11 +26,8 @@ def get_zillow_data():
         AND predictions_2017.transactiondate LIKE '2017%%'
         AND properties_2017.latitude IS NOT NULL
         AND properties_2017.longitude IS NOT NULL;'''
-        # save as .csv
-        df.to_csv('zillow.csv')
-
-    df = pd.read_sql(sql, get_db_url('zillow'))
-    return df
+        df = pd.read_sql(sql, get_db_url('zillow'))
+        return df
 
 
 def find_missing_values(df):
